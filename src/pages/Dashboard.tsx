@@ -1,8 +1,21 @@
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated, requiresMfa } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirigir si no está autenticado o si requiere MFA
+  useEffect(() => {
+    if (!isAuthenticated || requiresMfa) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, requiresMfa, navigate]);
+
+  if (!isAuthenticated || requiresMfa) {
+    return null;
+  }
 
   return (
     <div className="container py-5">
@@ -73,17 +86,14 @@ const Dashboard = () => {
                       <div className="mb-3">
                         <h6 className="fw-semibold">Autenticación de Dos Factores</h6>
                         <p className="small text-muted mb-2">
-                          La autenticación de dos factores añade una capa adicional de seguridad a tu cuenta.
+                          La autenticación de dos factores añade una capa adicional de seguridad a tu cuenta. Recibirás un código por correo electrónico al iniciar sesión.
                         </p>
-                        <Link
-                          to="/setup-mfa"
+                        <button
                           className="btn btn-outline-success btn-sm fw-bold"
+                          disabled
                         >
-                          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="me-1">
-                            <path d="M12 3l7 4v5c0 5-3.5 9-7 9s-7-4-7-9V7l7-4z" stroke="#22c55e" strokeWidth="2"/>
-                          </svg>
-                          Configurar 2FA
-                        </Link>
+                          2FA por correo activado
+                        </button>
                       </div>
                       <div>
                         <h6 className="fw-semibold">Cambiar Contraseña</h6>

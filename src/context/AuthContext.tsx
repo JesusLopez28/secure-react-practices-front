@@ -11,6 +11,7 @@ interface AuthState {
   error: string | null;
   requiresMfa: boolean;
   tempToken: string | null;
+  tempEmail: string | null;
 }
 
 interface AuthContextType extends AuthState {
@@ -30,7 +31,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loading: true,
     error: null,
     requiresMfa: false,
-    tempToken: null
+    tempToken: null,
+    tempEmail: null
   });
 
   // Verificar si hay un token almacenado al cargar
@@ -59,33 +61,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setState({ ...state, loading: true, error: null });
       
       const response = await authApi.login({ email, password });
-      
-      if (response.requiresMfa) {
-        // Si requiere MFA, guardar token temporal y cambiar estado
-        localStorage.setItem('tempToken', response.tempToken);
+      const res = response as { requiresMfa?: boolean; tempToken?: string; token?: string; user?: User; tempEmail?: string };
+
+      // SIEMPRE requiere MFA tras login exitoso
+      if (res.requiresMfa) {
+        localStorage.setItem('tempEmail', email);
         setState({
           ...state,
           loading: false,
           requiresMfa: true,
-          tempToken: response.tempToken
+          tempEmail: email
         });
         return;
       }
-      
-      // Login exitoso sin MFA
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      
+      // Nunca debe llegar aquí, pero por compatibilidad:
       setState({
         ...state,
-        user: response.user,
-        isAuthenticated: true,
+        error: 'Error inesperado en el flujo de autenticación',
         loading: false
       });
     } catch (error: any) {
+      let msg = 'Error al iniciar sesión';
+      if ((error as any).response?.data?.message) {
+        msg = (error as any).response.data.message;
+      } else if ((error as any).message) {
+        msg = (error as any).message;
+      }
       setState({
         ...state,
-        error: error.response?.data?.message || 'Error al iniciar sesión',
+        error: msg,
         loading: false
       });
     }
@@ -103,9 +107,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loading: false
       });
     } catch (error: any) {
+      let msg = 'Error al registrar usuario';
+      if ((error as any).response?.data?.message) {
+        msg = (error as any).response.data.message;
+      } else if ((error as any).message) {
+        msg = (error as any).message;
+      }
       setState({
         ...state,
-        error: error.response?.data?.message || 'Error al registrar usuario',
+        error: msg,
         loading: false
       });
     }
@@ -116,6 +126,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('tempToken');
+    localStorage.removeItem('tempEmail');
     
     setState({
       user: null,
@@ -123,7 +134,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       loading: false,
       error: null,
       requiresMfa: false,
-      tempToken: null
+      tempToken: null,
+      tempEmail: null
     });
   };
 
@@ -133,6 +145,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setState({ ...state, loading: true, error: null });
       
       const response = await authApi.setupMfa();
+      const res = response as { secret: string; qrCode: string };
       
       setState({
         ...state,
@@ -140,13 +153,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       
       return {
-        secret: response.secret,
-        qrCode: response.qrCode
+        secret: res.secret,
+        qrCode: res.qrCode
       };
     } catch (error: any) {
+      let msg = 'Error al configurar MFA';
+      if ((error as any).response?.data?.message) {
+        msg = (error as any).response.data.message;
+      } else if ((error as any).message) {
+        msg = (error as any).message;
+      }
       setState({
         ...state,
-        error: error.response?.data?.message || 'Error al configurar MFA',
+        error: msg,
         loading: false
       });
       throw error;
@@ -154,35 +173,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Verificar código MFA
-  const verifyMfa = async (token: string) => {
+  const verifyMfa = async (code: string) => {
     try {
       setState({ ...state, loading: true, error: null });
-      
-      // Verificar que tengamos el token temporal y un userId válido
-      if (!state.tempToken || !state.user?.id) {
+
+      if (!state.tempEmail) {
         throw new Error('Información de autenticación incompleta');
       }
-      
+
+      // Enviar el email temporal guardado tras login
       const response = await authApi.verifyMfa({
-        token,
-        userId: state.user.id
+        code,
+        email: state.tempEmail
       });
-      
+
+      // Asegurarse de que response tiene la forma esperada
+      const res = response as { token: string; user: User };
+
       // Verificación exitosa, guardar token completo
-      localStorage.setItem('token', response.token);
-      localStorage.removeItem('tempToken');
-      
+      localStorage.setItem('token', res.token);
+      localStorage.setItem('user', JSON.stringify(res.user));
+      localStorage.removeItem('tempEmail');
+
       setState({
         ...state,
+        user: res.user,
         isAuthenticated: true,
         requiresMfa: false,
-        tempToken: null,
+        tempEmail: null,
         loading: false
       });
     } catch (error: any) {
+      let msg = 'Código MFA inválido';
+      if ((error as any).response && (error as any).response.data && (error as any).response.data.message) {
+        msg = (error as any).response.data.message;
+      } else if ((error as any).message) {
+        msg = (error as any).message;
+      }
       setState({
         ...state,
-        error: error.response?.data?.message || 'Código MFA inválido',
+        error: msg,
         loading: false
       });
       throw error;

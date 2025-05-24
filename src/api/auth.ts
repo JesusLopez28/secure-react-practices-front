@@ -43,17 +43,8 @@ export const authApi = {
   },
   
   // Verificar código MFA
-  verifyMfa: async (params: { token: string; userId: number }) => {
-    // Para verificación MFA usamos el token temporal
-    const tempToken = localStorage.getItem('tempToken');
-    
-    const response = await axios.post(`${API_URL}/auth/verify-mfa`, params, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${tempToken}`
-      }
-    });
-    
+  verifyMfa: async (params: { code: string; email: string }) => {
+    const response = await api.post('/auth/verify-mfa', params);
     return response.data;
   }
 };

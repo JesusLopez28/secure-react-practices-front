@@ -28,14 +28,8 @@ const LoginForm = () => {
     
     try {
       await login(credentials.email, credentials.password);
-      
-      // Si requiere MFA, redirigir a la página de verificación
-      if (requiresMfa) {
-        navigate('/verify-mfa');
-      } else {
-        // Si no requiere MFA, redirigir al dashboard
-        navigate('/dashboard');
-      }
+      // Siempre redirigir a la página de verificación MFA
+      navigate('/verify-mfa');
     } catch (err) {
       // El error se maneja en el contexto de auth
       console.error('Error en login:', err);
@@ -117,7 +111,7 @@ const LoginForm = () => {
               </form>
               {error && (
                 <div className="alert alert-danger mt-3">
-                  {error}
+                  {typeof error === 'string' ? error : 'Ocurrió un error al iniciar sesión. Intenta de nuevo.'}
                 </div>
               )}
               <div className="mt-4 text-center">

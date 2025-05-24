@@ -12,8 +12,8 @@ Esta aplicación implementa prácticas seguras de desarrollo en React, siguiendo
 
 ### Autenticación Multifactor (MFA)
 
-- Soporte para configuración de autenticación de dos factores
-- Integración con aplicaciones de autenticación via TOTP
+- Soporte para autenticación de dos factores por correo electrónico
+- Envío de código de verificación al email del usuario
 - Flujo seguro de verificación MFA
 
 ## Tecnologías

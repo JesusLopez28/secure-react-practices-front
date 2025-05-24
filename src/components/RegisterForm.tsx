@@ -114,7 +114,7 @@ const RegisterForm = () => {
                 <p className="text-muted mb-0">Únete a la comunidad de seguridad</p>
               </div>
               {error && (
-                <div className="alert alert-danger">{error}</div>
+                <div className="alert alert-danger">{typeof error === 'string' ? error : 'Ocurrió un error al registrar. Intenta de nuevo.'}</div>
               )}
               <form onSubmit={handleSubmit} className="mt-3">
                 {/* Nombre de usuario */}

@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const MfaVerify = () => {
   const [token, setToken] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const { verifyMfa, loading } = useAuth();
+  const { verifyMfa, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Redirigir automáticamente al dashboard cuando esté autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Manejar envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,7 +27,7 @@ const MfaVerify = () => {
     try {
       setError(null);
       await verifyMfa(token);
-      navigate('/dashboard');
+      // Quitar navigate('/dashboard') de aquí, lo hace el useEffect
     } catch (err: any) {
       setError(err.message || 'Código inválido');
     }
@@ -41,14 +48,14 @@ const MfaVerify = () => {
                   </svg>
                 </div>
                 <h2 className="fw-bold text-info mb-1">Verificación de Dos Factores</h2>
-                <p className="text-muted mb-0">Ingresa el código de 6 dígitos de tu app de autenticación</p>
+                <p className="text-muted mb-0">Ingresa el código de 6 dígitos que recibiste en tu correo electrónico</p>
               </div>
               {error && (
                 <div className="alert alert-danger">{error}</div>
               )}
               <form onSubmit={handleSubmit} className="mt-3">
                 <div className="mb-3">
-                  <label htmlFor="token" className="form-label fw-semibold">Código de verificación</label>
+                  <label htmlFor="token" className="form-label fw-semibold">Código recibido por correo</label>
                   <input
                     type="text"
                     id="token"

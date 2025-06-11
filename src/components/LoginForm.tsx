@@ -43,12 +43,12 @@ const LoginForm = () => {
           <div className="card shadow-lg border-0 rounded-4">
             <div className="card-body p-5">
               <div className="text-center mb-4">
-                <div className="bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style={{width: 60, height: 60, background: "linear-gradient(135deg, #6610f2, #0d6efd)"}}>
-                  {/* Nuevo icono: candado moderno */}
-                  <svg className="text-white" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <rect x="5" y="11" width="14" height="8" rx="3" stroke="#fff" strokeWidth="2"/>
-                    <path d="M8 11V8a4 4 0 018 0v3" stroke="#fff" strokeWidth="2"/>
-                    <circle cx="12" cy="15" r="1.5" fill="#8b5cf6"/>
+                <div className="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style={{width: 60, height: 60}}>
+                  {/* Icono candado acorde al diseño */}
+                  <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
+                  <rect x="5" y="11" width="14" height="8" rx="3" stroke="#fff" strokeWidth="2"/>
+                  <path d="M8 11V8a4 4 0 018 0v3" stroke="#fff" strokeWidth="2"/>
+                  <circle cx="12" cy="15" r="1.5" fill="#0d6efd"/>
                   </svg>
                 </div>
                 <h2 className="fw-bold text-primary mb-1">Iniciar sesión</h2>
@@ -82,7 +82,6 @@ const LoginForm = () => {
                       type="button"
                       className="btn btn-outline-secondary"
                       tabIndex={-1}
-                      style={{borderLeft: 0}}
                       onClick={() => setShowPassword(v => !v)}
                       aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >

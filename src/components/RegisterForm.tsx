@@ -102,12 +102,12 @@ const RegisterForm = () => {
           <div className="card shadow-lg border-0 rounded-4">
             <div className="card-body p-5">
               <div className="text-center mb-4">
-                <div className="bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-2 shadow" style={{width: 64, height: 64}}>
-                  {/* Nuevo icono: usuario seguro */}
-                  <svg width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <circle cx="12" cy="8" r="4" stroke="#fff" strokeWidth="2"/>
-                    <path d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6" stroke="#fff" strokeWidth="2"/>
-                    <path d="M17 7l2 2 3-3" stroke="#22c55e" strokeWidth="2"/>
+                <div className="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style={{width: 60, height: 60}}>
+                  {/* Icono candado acorde al diseño */}
+                  <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
+                  <rect x="5" y="11" width="14" height="8" rx="3" stroke="#fff" strokeWidth="2"/>
+                  <path d="M8 11V8a4 4 0 018 0v3" stroke="#fff" strokeWidth="2"/>
+                  <circle cx="12" cy="15" r="1.5" fill="#0d6efd"/>
                   </svg>
                 </div>
                 <h2 className="fw-bold text-primary mb-1">Crear Cuenta</h2>
@@ -163,7 +163,6 @@ const RegisterForm = () => {
                       type="button"
                       className="btn btn-outline-secondary"
                       tabIndex={-1}
-                      style={{borderLeft: 0}}
                       onClick={() => setShowPassword(v => !v)}
                       aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >
@@ -210,7 +209,6 @@ const RegisterForm = () => {
                       type="button"
                       className="btn btn-outline-secondary"
                       tabIndex={-1}
-                      style={{borderLeft: 0}}
                       onClick={() => setShowConfirm(v => !v)}
                       aria-label={showConfirm ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >

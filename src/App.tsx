@@ -66,7 +66,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen bg-dark" style={{background: "var(--color-bg)", minHeight: "100vh"}}>
+        <div className="min-h-screen" style={{background: "var(--color-bg)", minHeight: "100vh"}}>
           <AppRoutes />
         </div>
       </AuthProvider>
